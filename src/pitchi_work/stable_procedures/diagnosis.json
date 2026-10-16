@@ -1,0 +1,8 @@
+{
+  "id": "evidence-led-diagnosis", "profile": "php_search_quality", "reviewed": true,
+  "applicability": ["Observed search mismatch or repeated failed edits"],
+  "checks": ["Separate symptom, candidate cause, supporting evidence and falsifying test", "Retrieve missing source and receipts before selecting a target"],
+  "steps": ["Inspect normalized concepts, candidate generation, filtering and final ranking separately", "Classify noise, missing records, missing index and ranking independently", "Compare receipt test IDs; reconsider a contradicted hypothesis before repeating edits"],
+  "success": ["Host before/after shows requested improvement and protected tests do not regress"],
+  "avoid": ["Do not equate zero results with absent real-world sources", "Do not flatten synonym alternatives into unconditional AND", "Do not reuse an old target without current source hash verification"]
+}

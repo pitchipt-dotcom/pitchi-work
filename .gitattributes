@@ -1,0 +1,2 @@
+# Unified diff context lines can contain one required space.
+src/ptotsearch_tools/search-support.patch whitespace=-blank-at-eol

@@ -1,0 +1,20 @@
+{
+  "holdout": [
+    "慢性閉塞性肺疾患 リハビリテーション",
+    "パーキンソン病 リハビリテーション",
+    "変形性膝関節症 リハビリテーション"
+  ],
+  "forbidden_ids": [
+    "ng236-early-supported-discharge",
+    "ng236-rehab-intensity",
+    "ng185-cardiac-rehab-access",
+    "ng106-cardiac-rehabilitation",
+    "ng115-pulmonary-rehabilitation",
+    "cg83-early-critical-care-rehabilitation"
+  ],
+  "negative_queries": [
+    "未登録疾患 リハビリテーション",
+    "大動脈解離 存在しない修飾語"
+  ],
+  "fixture_notice": "Test-only public bibliography metadata; no document text or runtime evidence. Not a claim of current medical accuracy."
+}

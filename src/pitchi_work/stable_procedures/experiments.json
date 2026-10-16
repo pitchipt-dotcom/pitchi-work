@@ -1,0 +1,8 @@
+{
+  "id": "bounded-experiment-lessons", "profile": "php_search_quality", "reviewed": true,
+  "applicability": ["Hypothesis chosen for a localized search change"],
+  "checks": ["Fix target, control, positive, negative and zero-result cases before editing"],
+  "steps": ["Request exact evidence and source via existing Host protocol", "Select a source-backed editable block; propose one minimal change", "Run protected tests and compare IDs, diagnostics and real before/after", "Store rejected hypothesis and reason separately from verified outcomes"],
+  "success": ["Independent Host validation passes; root acceptance alone decides completion"],
+  "avoid": ["No changing test expectations to manufacture PASS", "No treating more results as better relevance", "Do not confuse a patch passing unit tests with mission completion"]
+}

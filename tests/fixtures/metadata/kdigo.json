@@ -1,0 +1,34 @@
+{
+  "id": "kdigo-2024-ckd",
+  "title": "KDIGO 2024 Clinical Practice Guideline for the Evaluation and Management of Chronic Kidney Disease",
+  "issuer": "Kidney Disease: Improving Global Outcomes (KDIGO)",
+  "edition": "2024",
+  "revision_year": 2024,
+  "official_url": "https://kdigo.org/guidelines/ckd-evaluation-and-management/",
+  "official_page_url": "https://kdigo.org/guidelines/ckd-evaluation-and-management/",
+  "diseases": [
+    "慢性腎臓病",
+    "CKD"
+  ],
+  "synonyms": [
+    "chronic kidney disease"
+  ],
+  "search_terms": [
+    "CKD",
+    "慢性腎臓病"
+  ],
+  "language": "en",
+  "terms_status": "link_metadata_only",
+  "allowed_scope": "metadata_only",
+  "ingestion_status": "metadata_only",
+  "current_status": "test_fixture",
+  "current_evidence_urls": [
+    "https://kdigo.org/guidelines/ckd-evaluation-and-management/"
+  ],
+  "gold_ids": [
+    "TCKD1",
+    "TCKD2"
+  ],
+  "fixture_notice": "Test-only public bibliography metadata; no document text or runtime evidence. Not a claim of current medical accuracy.",
+  "checked_at": "2000-01-01"
+}

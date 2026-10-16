@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "frozen_before_implementation": true,
+  "scope": "one aortic guideline; bibliography and official link only; no PDF acquisition",
+  "queries": [
+    {
+      "id": "G1",
+      "query": "大動脈解離",
+      "acceptance": true,
+      "expected": {
+        "id": "jcs-2020-aortic",
+        "title": "2020年改訂版 大動脈瘤・大動脈解離診療ガイドライン",
+        "issuer": "日本循環器学会 / 日本心臓血管外科学会 / 日本胸部外科学会 / 日本血管外科学会",
+        "edition": "2020年改訂版",
+        "revision_year": 2020,
+        "official_url": "https://www.j-circ.or.jp/cms/wp-content/uploads/2020/07/JCS2020_Ogino.pdf"
+      },
+      "disease_area": "大動脈疾患",
+      "status": "fixed",
+      "section": null,
+      "section_status": "未確認",
+      "max_rank": 6
+    },
+    {
+      "id": "G2",
+      "query": "大動脈瘤",
+      "acceptance": true,
+      "expected": {
+        "id": "jcs-2020-aortic",
+        "title": "2020年改訂版 大動脈瘤・大動脈解離診療ガイドライン",
+        "issuer": "日本循環器学会 / 日本心臓血管外科学会 / 日本胸部外科学会 / 日本血管外科学会",
+        "edition": "2020年改訂版",
+        "revision_year": 2020,
+        "official_url": "https://www.j-circ.or.jp/cms/wp-content/uploads/2020/07/JCS2020_Ogino.pdf"
+      },
+      "disease_area": "大動脈疾患",
+      "status": "fixed",
+      "section": null,
+      "section_status": "未確認",
+      "max_rank": 6
+    },
+    {
+      "id": "G3",
+      "query": "腹部大動脈瘤",
+      "acceptance": true,
+      "expected": {
+        "id": "jcs-2020-aortic",
+        "title": "2020年改訂版 大動脈瘤・大動脈解離診療ガイドライン",
+        "issuer": "日本循環器学会 / 日本心臓血管外科学会 / 日本胸部外科学会 / 日本血管外科学会",
+        "edition": "2020年改訂版",
+        "revision_year": 2020,
+        "official_url": "https://www.j-circ.or.jp/cms/wp-content/uploads/2020/07/JCS2020_Ogino.pdf"
+      },
+      "disease_area": "大動脈疾患",
+      "status": "fixed",
+      "section": null,
+      "section_status": "未確認",
+      "max_rank": 6
+    },
+    {
+      "id": "G4",
+      "query": "大動脈解離 リハビリテーション",
+      "acceptance": true,
+      "expected": {
+        "id": "jcs-2020-aortic",
+        "title": "2020年改訂版 大動脈瘤・大動脈解離診療ガイドライン",
+        "issuer": "日本循環器学会 / 日本心臓血管外科学会 / 日本胸部外科学会 / 日本血管外科学会",
+        "edition": "2020年改訂版",
+        "revision_year": 2020,
+        "official_url": "https://www.j-circ.or.jp/cms/wp-content/uploads/2020/07/JCS2020_Ogino.pdf"
+      },
+      "disease_area": "大動脈疾患",
+      "status": "fixed",
+      "section": null,
+      "section_status": "未確認",
+      "max_rank": 6
+    },
+    {
+      "id": "G5",
+      "query": "イレウス",
+      "acceptance": false,
+      "expected": null,
+      "disease_area": "腸閉塞・イレウス",
+      "status": "未確定",
+      "section": null,
+      "section_status": "未確認",
+      "max_rank": null
+    },
+    {
+      "id": "G6",
+      "query": "腸閉塞",
+      "acceptance": false,
+      "expected": null,
+      "disease_area": "腸閉塞・イレウス",
+      "status": "未確定",
+      "section": null,
+      "section_status": "未確認",
+      "max_rank": null
+    },
+    {
+      "id": "G7",
+      "query": "癒着性腸閉塞",
+      "acceptance": false,
+      "expected": null,
+      "disease_area": "腸閉塞・イレウス",
+      "status": "未確定",
+      "section": null,
+      "section_status": "未確認",
+      "max_rank": null
+    },
+    {
+      "id": "G8",
+      "query": "CKD",
+      "acceptance": false,
+      "expected": {
+        "title": "エビデンスに基づくCKD診療ガイドライン2023",
+        "issuer": "日本腎臓学会",
+        "edition": "2023",
+        "revision_year": 2023,
+        "official_url": "https://jsn.or.jp/medic/guideline/"
+      },
+      "disease_area": "CKD",
+      "status": "candidate",
+      "section": null,
+      "section_status": "未確認",
+      "max_rank": null
+    },
+    {
+      "id": "G9",
+      "query": "慢性腎臓病",
+      "acceptance": false,
+      "expected": {
+        "title": "エビデンスに基づくCKD診療ガイドライン2023",
+        "issuer": "日本腎臓学会",
+        "edition": "2023",
+        "revision_year": 2023,
+        "official_url": "https://jsn.or.jp/medic/guideline/"
+      },
+      "disease_area": "CKD",
+      "status": "candidate",
+      "section": null,
+      "section_status": "未確認",
+      "max_rank": null
+    },
+    {
+      "id": "G10",
+      "query": "AKI",
+      "acceptance": false,
+      "expected": {
+        "title": "AKI（急性腎障害）診療ガイドライン2016",
+        "issuer": "日本腎臓学会ほか（合同発行元は後続監査で確認）",
+        "edition": "2016",
+        "revision_year": 2016,
+        "official_url": "https://jsn.or.jp/medic/guideline/"
+      },
+      "disease_area": "AKI",
+      "status": "candidate",
+      "section": null,
+      "section_status": "未確認",
+      "max_rank": null
+    },
+    {
+      "id": "G11",
+      "query": "急性腎障害",
+      "acceptance": false,
+      "expected": {
+        "title": "AKI（急性腎障害）診療ガイドライン2016",
+        "issuer": "日本腎臓学会ほか（合同発行元は後続監査で確認）",
+        "edition": "2016",
+        "revision_year": 2016,
+        "official_url": "https://jsn.or.jp/medic/guideline/"
+      },
+      "disease_area": "AKI",
+      "status": "candidate",
+      "section": null,
+      "section_status": "未確認",
+      "max_rank": null
+    },
+    {
+      "id": "G12",
+      "query": "透析",
+      "acceptance": false,
+      "expected": null,
+      "disease_area": "透析",
+      "status": "未確定",
+      "section": null,
+      "section_status": "未確認",
+      "max_rank": null
+    }
+  ],
+  "required_mode": "metadata_only",
+  "holdout": [
+    "慢性閉塞性肺疾患 リハビリテーション",
+    "パーキンソン病 リハビリテーション",
+    "変形性膝関節症 リハビリテーション"
+  ],
+  "forbidden_noise_source": "Phase5 baseline six guideline IDs; preserved private evidence",
+  "change_policy": "変更理由・出典・変更前後のdiffを別記し再コミット。実装の正当化のための事後変更は禁止。",
+  "fixture_notice": "Test-only public bibliography metadata; no document text or runtime evidence. Not a claim of current medical accuracy."
+}

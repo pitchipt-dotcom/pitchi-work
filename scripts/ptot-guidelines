@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+PITCHI_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+export PYTHONPATH="$PITCHI_ROOT/src"
+export PYTHONDONTWRITEBYTECODE=1
+exec python3 -B -m ptotsearch_tools.cli "$@"

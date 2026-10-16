@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "frozen_before_implementation": true,
+  "required_mode": "metadata_only",
+  "scope": "Separate Toolify reuse expectations; original aortic gold unchanged",
+  "queries": [
+    {
+      "id": "TCKD1",
+      "query": "CKD",
+      "acceptance": true,
+      "expected": {
+        "id": "kdigo-2024-ckd",
+        "title": "KDIGO 2024 Clinical Practice Guideline for the Evaluation and Management of Chronic Kidney Disease",
+        "issuer": "Kidney Disease: Improving Global Outcomes (KDIGO)",
+        "edition": "2024",
+        "revision_year": 2024,
+        "official_url": "https://kdigo.org/guidelines/ckd-evaluation-and-management/"
+      },
+      "max_rank": 1,
+      "section": null
+    },
+    {
+      "id": "TCKD2",
+      "query": "慢性腎臓病",
+      "acceptance": true,
+      "expected": {
+        "id": "kdigo-2024-ckd",
+        "title": "KDIGO 2024 Clinical Practice Guideline for the Evaluation and Management of Chronic Kidney Disease",
+        "issuer": "Kidney Disease: Improving Global Outcomes (KDIGO)",
+        "edition": "2024",
+        "revision_year": 2024,
+        "official_url": "https://kdigo.org/guidelines/ckd-evaluation-and-management/"
+      },
+      "max_rank": 1,
+      "section": null
+    }
+  ],
+  "holdout": [
+    "慢性閉塞性肺疾患 リハビリテーション",
+    "パーキンソン病 リハビリテーション",
+    "変形性膝関節症 リハビリテーション"
+  ],
+  "fixture_notice": "Test-only public bibliography metadata; no document text or runtime evidence. Not a claim of current medical accuracy."
+}

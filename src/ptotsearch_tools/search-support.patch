@@ -1,0 +1,130 @@
+--- a/src/GuidelineSectionSearch.php
++++ b/src/GuidelineSectionSearch.php
+@@ -76,7 +76,7 @@
+             }
+         }
+         $stmt=$db->prepare('SELECT s.* FROM guideline_sections s WHERE s.enabled=1 AND ('.implode(' OR ',$where).')');
+-        $stmt->execute($params);$rows=$stmt->fetchAll();
++        $stmt->execute($params);$rows=array_merge($stmt->fetchAll(),self::metadataRows($query));
+         $recommendations=[];
+         $overlay=new KnowledgeOverlay($db);foreach($db->query('SELECT * FROM guideline_recommendations WHERE enabled=1 ORDER BY recommendation_number')->fetchAll() as $recommendation){
+             if($o=$overlay->get('guideline_recommendation',(string)$recommendation['id']))$recommendation=array_replace($recommendation,$o['value']??[])+['_overlay_revision_id'=>$o['revision_id']];
+@@ -86,9 +86,15 @@
+         }
+         foreach($rows as &$row)$row['_recommendations']=$recommendations[$row['id']]??[];
+         unset($row);
+-        foreach ($rows as &$row) self::score($row,$concepts,$query);
++        $required=array_values(array_intersect(array_column($concepts,'name'),self::REQUIRED_CONCEPTS));
++        // Without a recognized primary topic, do not discard the literal
++        // subject and answer using only a generic intervention. Order-neutral;
++        // known-topic queries retain their existing optional-modifier behavior.
++        if($required===[])foreach($concepts as $concept){
++            if(!isset(self::CONCEPTS[$concept['name']]))$required[]=$concept['name'];
++        }
++        foreach ($rows as &$row) self::score($row,$concepts,$query,$required!==[]);
+         unset($row);
+-        $required=array_values(array_intersect(array_column($concepts,'name'),self::REQUIRED_CONCEPTS));
+         if($required!==[])$rows=array_values(array_filter($rows,static fn(array $row):bool=>array_diff($required,$row['strong_matched_terms'])===[]));
+         usort($rows,static fn(array $a,array $b):int => $b['relevance_score']<=>$a['relevance_score'] ?: $b['matched_concept_count']<=>$a['matched_concept_count'] ?: $b['publication_year']<=>$a['publication_year'] ?: strcmp($a['id'],$b['id']));
+         $out=[];$perGuideline=[];
+@@ -113,6 +119,7 @@
+         $tokens=array_slice(array_values(array_unique(array_filter($matches[0]))),0,10);
+         $concepts=[];$consumed=[];
+         foreach (self::CONCEPTS as $name=>$aliases) {
++            usort($aliases, static fn($a, $b) => mb_strlen($b) <=> mb_strlen($a));
+             foreach ($aliases as $alias) {
+                 $alias=mb_strtolower($alias);
+                 if (!self::contains($normalized,$alias)) continue;
+@@ -128,14 +135,19 @@
+         return array_values($concepts);
+     }
+ 
+-    private static function score(array &$row,array $concepts,string $query): void
++    private static function score(array &$row,array $concepts,string $query,bool $topicConstrained=false): void
+     {
+         $score=0;$matchedConcepts=[];$strongMatchedConcepts=[];$matchedFields=[];$recommendationEvidence=[];
+         foreach ($concepts as $concept) {
+             $best=0;$conceptFields=[];
++            $specific=0;
++            $shortest=min(array_map('mb_strlen',$concept['aliases']));
+             foreach (self::FIELDS as $field) {
+                 $text=mb_strtolower((string)($row[$field['name']]??''));
+                 if ($text==='') continue;
++                // Prefer the requested specific phrase over a broader alias.
++                // Preserve synonym retrieval; this changes ranking, not scope.
++                if($topicConstrained&&mb_strlen($concept['query_term'])>$shortest&&self::contains($text,$concept['query_term']))$specific=max($specific,$field['weight']);
+                 foreach ($concept['aliases'] as $alias) {
+                     if (!self::contains($text,$alias)) continue;
+                     $best=max($best,$field['weight']);$conceptFields[]=$field['name'];break;
+@@ -164,6 +176,7 @@
+             $conceptFields=array_values(array_unique($conceptFields));
+             $matchedConcepts[]=$concept['name'];$matchedFields[$concept['name']]=$conceptFields;
+             $score+=$best+min(5,max(0,count($conceptFields)-1));
++            $score+=3*$specific;
+             if ($best>=7) $strongMatchedConcepts[]=$concept['name'];
+         }
+         $matchedCount=count($strongMatchedConcepts);$queryCount=count($concepts);
+@@ -189,6 +202,52 @@
+         unset($row['keywords_json'],$row['tags_json'],$row['_recommendations']);
+     }
+ 
++    private static function metadataRows(string $query): array
++    {
++        $out=[];
++        foreach (glob(dirname(__DIR__).'/config/guideline_metadata/*.json')?:[] as $path) {
++            $m=json_decode(file_get_contents($path),true,512,JSON_THROW_ON_ERROR);
++            self::validateMetadata($m);
++            $row=self::metadataRow($m);
++            $text=mb_strtolower($row['guideline_title'].' '.$row['keywords_json']);
++            $subject=false;
++            foreach(array_merge($m['diseases'],$m['synonyms']) as $term)
++                if(self::contains(mb_strtolower($query),mb_strtolower($term)))$subject=true;
++            if(!$subject)continue;
++            foreach(self::queryConcepts($query) as $concept) {
++                $hit=false;
++                foreach($concept['aliases'] as $term)if(self::contains($text,$term))$hit=true;
++                if(!$hit)continue 2;
++            }
++            $out[]=$row;
++        }
++        return $out;
++    }
++
++    private static function validateMetadata(array $m): void
++    {
++        foreach(['id','title','issuer','edition','official_url','language','terms_status','allowed_scope','ingestion_status','checked_at'] as $k)
++            if(!is_string($m[$k]??null)||trim($m[$k])==='')throw new RuntimeException($k);
++        foreach(['diseases','synonyms','search_terms','gold_ids'] as $k) {
++            if(!is_array($m[$k]??null))throw new RuntimeException($k);
++            foreach($m[$k] as $v)if(!is_string($v)||$v==='')throw new RuntimeException($k);
++        }
++        if(!is_int($m['revision_year']??null)||$m['allowed_scope']!=='metadata_only'||!filter_var($m['official_url'],FILTER_VALIDATE_URL)||parse_url($m['official_url'],PHP_URL_SCHEME)!=='https')throw new RuntimeException('metadata scope/URL');
++    }
++
++    private static function metadataRow(array $m): array
++    {
++        $row=array_fill_keys(['chapter','page_start','page_end','clinical_question','population','phase','setting','intervention','outcome','recommendation','recommendation_strength','evidence_level','ptot_point','section_url'],null);
++        return $row+['id'=>'metadata:'.$m['id'],'guideline_id'=>$m['id'],
++            'guideline_title'=>$m['title'],'section_title'=>$m['title'],'issuing_body'=>$m['issuer'],
++            'publication_year'=>$m['revision_year'],'edition'=>$m['edition'],
++            'source_url'=>$m['official_url'],'verified_at'=>$m['checked_at'],
++            'collection_mode'=>'metadata_only','summary_provenance'=>'bibliographic',
++            'summary'=>'メタデータのみ。公式公開元の資料をご確認ください。',
++            'keywords_json'=>json_encode(array_merge($m['diseases'],$m['synonyms'],$m['search_terms']),JSON_UNESCAPED_UNICODE),
++            'tags_json'=>json_encode($m['diseases'],JSON_UNESCAPED_UNICODE)];
++    }
++
+     private static function contains(string $haystack,string $needle): bool
+     {
+         if($needle==='')return false;
+--- a/public/assets/app.js
++++ b/public/assets/app.js
+@@ -14,7 +14,7 @@
+   const papers=document.querySelector('#results'),button=document.querySelector('#more');if(papers&&button)papers.insertAdjacentElement('afterend',button);
+ }
+ (()=>{const previousFetch=window.fetch.bind(window);window.fetch=async(...args)=>{const response=await previousFetch(...args);if(String(args[0]).includes('/api/search'))response.clone().json().then(ptotOrderSearchResults).catch(()=>{});return response;};})();
+-function guideline(g){const tags=(g.tags||[]).slice(0,4).map(t=>`<span>${esc(t.replaceAll('_',' '))}</span>`).join('');const location=[g.chapter,g.page_start&&`p.${g.page_start}${g.page_end&&g.page_end!==g.page_start?`–${g.page_end}`:''}`].filter(Boolean).join(' · ');const recommendations=(g.related_recommendations||[]).map(r=>`<li><a href="${esc(r.anchor_url)}" target="_blank" rel="noopener noreferrer external"><strong>${esc(r.recommendation_number)}</strong></a> ${esc(r.japanese_summary||'')}${r.condition?`<small>条件：${esc(r.condition)}</small>`:''}</li>`).join('');return `<article class="guideline-card"><div class="guideline-tags">${tags}</div><h3>${esc(g.section_title)}</h3><p class="guideline-parent"><strong>元ガイドライン：</strong>${esc(g.guideline_title)}</p><p><strong>発行：</strong>${esc(g.issuing_body)}｜${esc(g.publication_year)}年${g.edition?`｜${esc(g.edition)}`:''}</p>${location?`<p><strong>該当箇所：</strong>${esc(location)}</p>`:''}<p>${esc(g.summary||'')}</p>${g.ptot_point?`<p class="guideline-point"><strong>PT/OTポイント</strong>${esc(g.ptot_point)}</p>`:''}${recommendations?`<details class="guideline-recommendations"><summary>検索に関連する推奨を確認</summary><ul>${recommendations}</ul></details>`:''}${g.recommendation_strength?`<p><strong>推奨度：</strong>${esc(g.recommendation_strength)}</p>`:''}${g.evidence_level?`<p><strong>エビデンス：</strong>${esc(g.evidence_level)}</p>`:''}<a class="tracked-source official" data-source-id="guideline-section:${esc(g.id)}" href="${esc(g.section_url||g.source_url)}" target="_blank" rel="noopener noreferrer external">原典の該当箇所を見る</a>${g.other_sections_count?`<p class="guideline-more">このガイドラインから他に${Number(g.other_sections_count)}件</p>`:''}</article>`}
++function guideline(g){const tags=(g.tags||[]).slice(0,4).map(t=>`<span>${esc(t.replaceAll('_',' '))}</span>`).join('');const location=[g.chapter,g.page_start&&`p.${g.page_start}${g.page_end&&g.page_end!==g.page_start?`–${g.page_end}`:''}`].filter(Boolean).join(' · ');const recommendations=(g.related_recommendations||[]).map(r=>`<li><a href="${esc(r.anchor_url)}" target="_blank" rel="noopener noreferrer external"><strong>${esc(r.recommendation_number)}</strong></a> ${esc(r.japanese_summary||'')}${r.condition?`<small>条件：${esc(r.condition)}</small>`:''}</li>`).join('');return `<article class="guideline-card"><div class="guideline-tags">${tags}</div><h3>${esc(g.section_title)}</h3>${g.collection_mode==='metadata_only'?'<p class="brief-note">メタデータのみ・公式資料へのリンク</p>':''}<p class="guideline-parent"><strong>元ガイドライン：</strong>${esc(g.guideline_title)}</p><p><strong>発行：</strong>${esc(g.issuing_body)}｜${esc(g.publication_year)}年${g.edition?`｜${esc(g.edition)}`:''}</p>${location?`<p><strong>該当箇所：</strong>${esc(location)}</p>`:''}<p>${esc(g.summary||'')}</p>${g.ptot_point?`<p class="guideline-point"><strong>PT/OTポイント</strong>${esc(g.ptot_point)}</p>`:''}${recommendations?`<details class="guideline-recommendations"><summary>検索に関連する推奨を確認</summary><ul>${recommendations}</ul></details>`:''}${g.recommendation_strength?`<p><strong>推奨度：</strong>${esc(g.recommendation_strength)}</p>`:''}${g.evidence_level?`<p><strong>エビデンス：</strong>${esc(g.evidence_level)}</p>`:''}<a class="tracked-source official" data-source-id="guideline-section:${esc(g.id)}" href="${esc(g.section_url||g.source_url)}" target="_blank" rel="noopener noreferrer external">${g.collection_mode==='metadata_only'?'公式公開元のガイドラインを見る':'原典の該当箇所を見る'}</a>${g.other_sections_count?`<p class="guideline-more">このガイドラインから他に${Number(g.other_sections_count)}件</p>`:''}</article>`}
+ async function search(append=false){const fd=new FormData(form),params=new URLSearchParams();for(const[k,v]of fd)if(v)params.set(k,v);params.set('offset',append?offset:0);last=params.toString();statusEl.textContent='検索中…';more.hidden=true;try{const r=await fetch(`${window.PTOT_BASE}/api/search?${params}`);const d=await r.json();if(!r.ok)throw new Error(d.error||'検索できませんでした');if(!append){results.innerHTML='';searchEventId=d.search_event_id}results.insertAdjacentHTML('beforeend',d.papers.map(paper).join(''));offset=(append?offset:0)+d.papers.length;const intent=d.routing?.intent||'evidence';const guidelineCount=Number(d.result_counts?.guidelines ?? (d.guidelines||[]).length),systemCount=Number(d.system_total||0),procedureCount=Number(d.procedure_total||0),paperCount=Number((d.paper_total??d.total)||0);const counts=[guidelineCount&&`${guidelineCount}件のガイドライン`,systemCount&&`${systemCount}件の制度情報`,procedureCount&&`${procedureCount}件の書類情報`,paperCount&&`${paperCount.toLocaleString()}件の論文`].filter(Boolean);statusEl.textContent=`${labels[intent]||labels.evidence}として判定 · ${counts.length?counts.join(' · '):'該当する情報はありません'}`;more.hidden=offset>=paperCount;articleList.innerHTML=d.related_articles.map(a=>`<a class="article-link tracked-article" href="${esc(a.url)}"><strong>${esc(a.title)}</strong><span>${esc(a.excerpt||'')}</span></a>`).join('');articles.hidden=!d.related_articles.length;history.replaceState(null,'','?'+new URLSearchParams(fd));}catch(e){statusEl.textContent=e.message}}
+ function selectDomain(domain,focus=false){const button=document.querySelector(`[data-domain="${CSS.escape(domain)}"]`);document.querySelectorAll('[data-domain]').forEach(item=>item.classList.toggle('selected',item===button));const mode=document.querySelector('#search-mode-label');if(!button){mode.hidden=true;return}form.elements.domain.value=domain;form.elements.q.placeholder=button.dataset.placeholder||'何を調べたいですか？';mode.textContent=button.dataset.label+'から検索';mode.hidden=false;if(focus){form.elements.q.focus();document.querySelector('.searchbox').scrollIntoView({behavior:'smooth',block:'center'})}}
+ form.addEventListener('submit',e=>{e.preventDefault();activateSearchView();offset=0;search()});more.addEventListener('click',()=>search(true));const initial=new URLSearchParams(location.search);for(const[k,v]of initial){const el=form.elements[k];if(el)el.value=v}if(initial.get('domain'))selectDomain(initial.get('domain'));if(initial.get('q')){activateSearchView();search()}
