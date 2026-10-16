@@ -3,7 +3,7 @@
 LLMと決定的なCLIを組み合わせ、有限の仕事を安全に進めるPython HostとCLIです。
 LLMの完了宣言をそのまま成功にせず、Hostが契約・証拠・検証・承認・最終判定を管理します。
 
-> Privateで権利確認中です。確認済みの新規文書等のみMITを適用し、旧コードのPublic化は保留しています。
+> 自作部分はMIT Licenseです。外部モデル・サービスは別途導入し、それぞれの利用条件に従ってください。
 > 全種類の仕事を自律完遂するシステムではありません。対応profileと利用条件を確認してください。
 
 ## Solve → Toolify → Agentify
@@ -82,6 +82,6 @@ private saved-runを使う回帰はfixtureを配布せず、明示指定時だ�
 
 ## ライセンス
 
-確認済みの新規文書・公開準備スクリプトは[MIT License](LICENSE)。Copyright (c) 2026 pitchipt-dotcom。
-旧コードは権利確認中です。[適用範囲一覧](LICENSE_SCOPE.md)を確認してください。
+自作のプログラム・テスト・文書は[MIT License](LICENSE)。Copyright (c) 2026 pitchipt-dotcom。
+[適用範囲](LICENSE_SCOPE.md)と[コードの由来](docs/PROVENANCE.md)を確認してください。
 第三者の依存ライブラリ・モデル・ソフトの条件は別です。[適用範囲](LICENSING.md)を確認してください。

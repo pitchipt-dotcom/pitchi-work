@@ -3,6 +3,7 @@ requires = ["setuptools>=77,<83"]
 build-backend = "setuptools.build_meta"
 
 [project]
+license = "MIT"
 name = "pitchi-work"
 version = "0.1.0"
 readme = "README.md"
