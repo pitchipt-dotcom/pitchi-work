@@ -1,3 +1,3 @@
-include README.md LICENSING.md SECURITY.md PRIVACY.md CONTRIBUTING.md THIRD_PARTY_NOTICES.md uv.lock
+include README.md LICENSE LICENSING.md SECURITY.md PRIVACY.md CONTRIBUTING.md THIRD_PARTY_NOTICES.md uv.lock
 recursive-include docs *.md *.json
 recursive-include tests *.py *.json *.cjs

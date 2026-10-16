@@ -6,7 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "pitchi-work"
 version = "0.1.0"
 readme = "README.md"
-license-files = ["LICENSING.md", "THIRD_PARTY_NOTICES.md"]
+license = "MIT"
+license-files = ["LICENSE", "LICENSING.md", "THIRD_PARTY_NOTICES.md"]
 description = "Host-owned finite workflows, validation and local AI CLI"
 requires-python = ">=3.11"
 dependencies = ["Pillow>=11,<13"]

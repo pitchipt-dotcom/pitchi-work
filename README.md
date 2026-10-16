@@ -3,7 +3,7 @@
 LLMと決定的なCLIを組み合わせ、有限の仕事を安全に進めるPython HostとCLIです。
 LLMの完了宣言をそのまま成功にせず、Hostが契約・証拠・検証・承認・最終判定を管理します。
 
-> 公開準備版：Privateで確認中。自作コードのライセンスは承認待ちです。
+> 自作コードはMIT Licenseで提供します。対応profileと必要な外部依存を確認してください。
 > 全種類の仕事を自律完遂するシステムではありません。対応profileと利用条件を確認してください。
 
 ## Solve → Toolify → Agentify
@@ -77,5 +77,10 @@ private saved-runを使う回帰はfixtureを配布せず、明示指定時だ�
 
 ## 関連資料
 
-[Pitchi-chat](https://github.com/pitchipt-dotcom/pitchi-chat) · [ライセンス選択待ち](LICENSING.md) ·
+[Pitchi-chat](https://github.com/pitchipt-dotcom/pitchi-chat) · [MIT License](LICENSE) ·
 [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md) · [第三者依存](THIRD_PARTY_NOTICES.md)
+
+## ライセンス
+
+自作部分は[MIT License](LICENSE)。Copyright (c) 2026 pitchipt-dotcom。
+第三者の依存ライブラリ・モデル・ソフトの条件は別です。[適用範囲](LICENSING.md)を確認してください。
